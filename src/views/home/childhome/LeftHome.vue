@@ -22,7 +22,7 @@
         </template>
         <el-menu-item-group>
           <el-menu-item index="/home/roomtype">类型管理</el-menu-item>
-          <el-menu-item index="2-2">客房管理</el-menu-item>
+          <el-menu-item index="/home/room">客房管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       <el-submenu index="3">
@@ -60,10 +60,10 @@
     },
     methods: {
       handleOpen(key, keyPath) {
-        console.log(key, keyPath);
+
       },
       handleClose(key, keyPath) {
-        console.log(key, keyPath);
+
       },
       receive() {
         //接收相应事件，并且回调相应函数

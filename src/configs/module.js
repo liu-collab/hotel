@@ -1,6 +1,10 @@
 //模式导出
 
 export default {
+  //随机数据
+  mock: {
+    url: "http://mockjs.com:83"
+  },
   //开发依赖
   dev: {
     name: "开发环境接口",

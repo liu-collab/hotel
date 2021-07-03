@@ -10,6 +10,8 @@ Vue.config.productionTip = false
 //设置中央事件总线
 Vue.prototype.$bus = new Vue()
 
+//导入mock
+import './mock'
 
 
 new Vue({

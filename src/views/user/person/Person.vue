@@ -11,7 +11,10 @@
     <div class="title">电话</div>
     <div class="desc">{{admin.phone}}</div>
     <div class="title">角色</div>
-    <div class="desc">{{admin.role.roleName}}</div>
+    <!-- 子组件会先于父组件渲染出来,下面在父组件调用也在本组件调用,即调用了两次,父组件调用时为
+      空,浏览器会报错,所以在下面进行一个判断
+    -->
+    <div class="desc">{{admin.role?admin.role.roleName:''}}</div>
   </div>
 </template>
 <script>

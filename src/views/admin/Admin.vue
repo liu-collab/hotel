@@ -175,6 +175,7 @@
       //获取表格数据方法
       async getroleList() {
         const res = await this.$get('/Role/List')
+
         this.roleList = res
       },
       //图片上传成功之前
@@ -196,7 +197,12 @@
 
       //获取表格数据方法
       async getdata() {
+        //mock时用
+        // const res = await this.$get('/Admin/List')
+        // console.log(res)
+        // this.tableData = res
         const { data } = await this.$get('/Admin/List')
+
         this.tableData = data
       },
       //添加方法

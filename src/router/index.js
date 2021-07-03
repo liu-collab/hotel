@@ -18,6 +18,7 @@ const error = () => import('../views/404error.vue')
 const RoleList = () => import('../views/role//RoleList.vue')
 const Admin = () => import('../views/admin/Admin.vue')
 const RoomType = () => import('../views/room/RoomType.vue')
+const Room = () => import('../views/room/Room.vue')
 const routes = [
   {//登录页
     path: '/',
@@ -69,6 +70,10 @@ const routes = [
         path: 'roomtype',
         meta: { title: '类型管理' },
         component: RoomType
+      }, {
+        path: 'room',
+        meta: { title: '客房管理' },
+        component: Room
       }
     ]
   },
