@@ -36,6 +36,9 @@
           sessionStorage.setItem("token", token);
           // 将token信息放到请求头中
           this.$setToken();
+          //保存登录信息
+          sessionStorage.setItem('loginId', this.loginId)
+
           this.$router.push("/home");
         } else {
           this.$router.push("/Login");

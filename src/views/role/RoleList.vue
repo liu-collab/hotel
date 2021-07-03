@@ -32,6 +32,7 @@
   </div>
 </template>
 <script>
+  import { mapMutations } from 'vuex'
   export default {
     name: '',
     props: {},
@@ -65,6 +66,7 @@
       this.getdata()
     },
     methods: {
+      ...mapMutations('user', ['setAdmin']),
       //获取表格数据方法
       async getdata() {
         const res = await this.$get('/Role/List')
@@ -138,8 +140,15 @@
               //修改角色的方法
               let { success, message } = await this.$post("/Role/Update", this.ruleForm)
               if (success) {
+
                 //成功通知消息
                 this.$msg_s(message)
+                //判断修改的是不是自己
+                if (sessionStorage.getItem('loginId') === this.ruleForm.loginId) {
+                  const admin = await this.$get('Admin/GetOne', { loginId: this.ruleForm.loginId })
+                  this.setAdmin(admin)
+
+                }
                 // //刷新表格数据
                 // this.getdata()
                 // //清空提交框

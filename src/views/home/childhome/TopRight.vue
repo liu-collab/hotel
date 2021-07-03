@@ -16,7 +16,7 @@
       </el-menu-item>
       <el-submenu index="4">
         <template slot="title"><i class="el-icon-user-solid"></i>
-          LYQ</template>
+          {{admin.name}}</template>
         <el-menu-item index="/home/person">个人中心</el-menu-item>
         <el-menu-item index="/home/modify">修改密码</el-menu-item>
         <el-menu-item @click="exit">退出系统</el-menu-item>
@@ -25,7 +25,10 @@
   </div>
 </template>
 <script>
+  import { mapMutations, mapState } from 'vuex'
+
   export default {
+
     name: '',
     props: {},
     data() {
@@ -34,7 +37,19 @@
         activeIndex2: '1'
       };
     },
+    async created() {
+      //记住用户名模块
+      let loginId = sessionStorage.getItem('loginId')
+
+      let admin = await this.$get('/Admin/GetOne', { loginId })
+      this.setAdmin(admin)
+    },
+    computed: {
+      //获取user下面的admin
+      ...mapState('user', ['admin'])
+    },
     methods: {
+      ...mapMutations('user', ['setAdmin']),
       handleSelect(key, keyPath) {
       },
       exit() {

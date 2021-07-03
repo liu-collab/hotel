@@ -54,7 +54,9 @@
         }
       };
     },
+
     methods: {
+
       //登录
       submitForm(formName) {
         this.$refs[formName].validate(async (valid) => {
@@ -81,6 +83,9 @@
         })
         if (res.success) {
           this.$msg_s(res.message)
+          //保存登录信息
+          sessionStorage.setItem("loginId", this.ruleForm.loginId)
+
           //用sessionStorag.setItem来保存令牌
           sessionStorage.setItem('token', res.token)
           // 将token信息放到请求头中
@@ -91,10 +96,7 @@
           // const token = sessionStorage.getItem('token')
           //发送请求时在headers添加token
           // this.$get('/admin/', { token: token })
-
           //是否需要记住我
-
-
           if (this.ruleForm.checkme) {
             //用locaStorage来永久保存登录信息
             localStorage.setItem('loginId', this.ruleForm.loginId)
@@ -109,6 +111,7 @@
             //sessionStorage.removeItem('token')
           }
         } else {
+
           this.$msg_w(res.message)
           this.$router.push('/Login')
         }
