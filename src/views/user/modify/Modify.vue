@@ -21,6 +21,7 @@
   import { mapState } from 'vuex'
   import { str2md2 } from '../../../utils/utils'
   export default {
+
     name: '',
     props: {},
     data() {
