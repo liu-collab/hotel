@@ -19,6 +19,7 @@ const RoleList = () => import('../views/role//RoleList.vue')
 const Admin = () => import('../views/admin/Admin.vue')
 const RoomType = () => import('../views/room/RoomType.vue')
 const Room = () => import('../views/room/Room.vue')
+const Guest = () => import('../views/guest/list.vue')
 const routes = [
   {//登录页
     path: '/',
@@ -74,6 +75,10 @@ const routes = [
         path: 'room',
         meta: { title: '客房管理' },
         component: Room
+      }, {
+        path: 'guest',
+        meta: { title: '顾客管理' },
+        component: Guest
       }
     ]
   },

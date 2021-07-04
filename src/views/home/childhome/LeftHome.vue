@@ -31,7 +31,7 @@
           <span>客户管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="3-1">客户管理</el-menu-item>
+          <el-menu-item index="/home/guest">客户管理</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
       <el-submenu index="4">
