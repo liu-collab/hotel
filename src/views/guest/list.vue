@@ -21,7 +21,30 @@
       </div>
     </div>
     <!-- 表格 -->
-    <el-table size="small" :data="tableData" style="width: 99%">
+    <el-table size="mini" :data="tableData" style="width: 99%">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-table size="mini" :data="props.row.subList" style="width: 99%">
+            <el-table-column width="80"></el-table-column>
+            <el-table-column label="姓名" prop="guestName" width="100">
+            </el-table-column>
+            <el-table-column label="电话" prop="phone" width="140">
+            </el-table-column>
+            <el-table-column label="身份证" prop="identityId" width="100">
+            </el-table-column>
+            <el-table-column label="操作" v-if="props.row.resideState.resideStateId===1">
+              <template slot-scope="scope">
+                <el-button size="mini" type="text" style="color: #E6A23C;"
+                  @click="handleEdit2(scope.$index ,scope.row)">编辑
+                </el-button>
+                <el-button size="mini" type="text" style="color: #F56C6C;"
+                  @click="handleDelete2(scope.$index, scope.row)">删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </template>
+      </el-table-column>
       <el-table-column label="客户姓名" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.guestName }}</span>
@@ -91,10 +114,19 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click=" handleShow(scope.$index, scope.row)">详情</el-button>
-          <el-button size="mini" type="primary" @click=" handleShow2(scope.$index, scope.row)">图片</el-button>
-          <el-button size="mini" type="warning" @click="handleEdit(scope.$index ,scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini" type="text" style="color: #E6A23C;" v-if="scope.row.resideState.resideStateId===1"
+            @click="btnclick2(scope.$index ,scope.row)">+
+          </el-button>
+          <el-button size="mini" type="text" style="color: #409EFF;" v-if="scope.row.resideState.resideStateId===1"
+            @click="checkout(scope.$index, scope.row)">结账
+          </el-button>
+
+          <el-button size="mini" type="text" style="color: #E6A23C;" v-if="scope.row.resideState.resideStateId===1"
+            @click="handleEdit(scope.$index ,scope.row)">编辑
+          </el-button>
+          <el-button size="mini" type="text" style="color: #F56C6C;" v-if="scope.row.resideState.resideStateId===2"
+            @click="handleDelete(scope.$index, scope.row)">删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -123,13 +155,14 @@
           </el-select>
         </el-form-item>
         <el-form-item label="房间" prop="roomId">
-          <el-select v-model="ruleForm.roomId" size="mini" clearable placeholder="请选择房间状态">
+          <el-select v-model="ruleForm.roomId" size="mini" clearable placeholder="请选择房间">
             <el-option v-for="item in  roomList" :key="item.roomId" :label="item.roomId" :value="item.roomId">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="入住日期" prop="resideDate">
-          <el-date-picker v-model="ruleForm.resideDate" type="datetime" placeholder="选择日期时间">
+          <el-date-picker v-model="ruleForm.resideDate" format="yyyy-MM-dd HH:mm:ss" type="datetime"
+            placeholder="选择日期时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="押金" prop="deposit">
@@ -144,7 +177,24 @@
         </el-form-item>
       </el-form>
     </el-drawer>
-
+    <!-- 子抽屉 -->
+    <el-drawer :title="title" :visible.sync="drawer2" :direction="direction" size="30%" :before-close="handleClose2">
+      <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px">
+        <el-form-item label="姓名" prop="guestName">
+          <el-input v-model="ruleForm2.guestName"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" prop="phone">
+          <el-input v-model.number="ruleForm2.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证" prop="identityId">
+          <el-input v-model="ruleForm2.identityId"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitFormChild('ruleForm2')">提交</el-button>
+          <el-button @click="resetForm2('ruleForm2')">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </el-drawer>
   </div>
 </template>
 <script>
@@ -221,6 +271,9 @@
 
 
       return {
+        subList: [],
+        //顾客编号
+        guestId: "",
         //客户姓名
         guestName: "",
         // 客户状态
@@ -241,8 +294,11 @@
         //表格数据
         tableData: [],
 
-
+        //打开抽屉
         drawer: false,
+        //打开子抽屉
+        drawer2: false,
+        //抽屉方向
         direction: 'rtl',
         title: '添加客户',
 
@@ -270,7 +326,17 @@
           deposit: "",
           // 入住人数
           guestNum: "",
-
+        },
+        //表单数据
+        ruleForm2: {
+          //顾客编号
+          guestId: "",
+          // 身份证
+          identityId: "",
+          // 姓名
+          guestName: "",
+          // 电话
+          phone: "",
 
         },
         rules: {
@@ -284,8 +350,15 @@
           roomId: [{ validator: checkroomId, trigger: 'change' }],
           roomTypeId: [{ validator: checkroomTypeId, trigger: 'change' }],
 
+        },
+        rules2: {
+          //光标离开时调用的方法
+          identifyId: [{ validator: checkidentifyId, trigger: 'blur' }],
+          guestName: [{ validator: checkguestName, trigger: 'blur' }],
+          phone: [{ validator: checkphone, trigger: 'blur' }],
         }
       };
+
     },
     created() {
       //获取结账状态数据
@@ -297,6 +370,17 @@
       this.gettypelist()
     },
     methods: {
+      //结账功能
+      async checkout(index, row) {
+        // 获取编号
+        const guestId = row.guestId
+        let { totalMoney } = await this.$post('/GuestRecord/Checkout', { guestId })
+        if (totalMoney) {
+          this.$msg_s("结账成功!你需要支付:" + totalMoney + "元")
+          //获取表格数据
+          this.getdata()
+        }
+      },
       //分页功能
       change(pageIndex) {
         this.pageIndex = pageIndex
@@ -304,6 +388,7 @@
       },
       //搜索按钮
       btnsearch() {
+        //获取表格数据
         this.getdata()
       },
       //获取结账状态
@@ -329,9 +414,16 @@
           //页码
           pageIndex: this.pageIndex,
         })
-        console.log(data)
+        // console.log(data)
         //获取页码
         this.count = count
+        //获取子表格数据
+        data.forEach(async r => {
+          r.subList = await this.$get('/GuestRecordSub/List', { guestId: r.guestId })
+          console.log(r.subList)
+          this.subList = r.subList
+        })
+
         //获取表格数据
         this.tableData = data
 
@@ -343,54 +435,90 @@
         this.label = "添加账号",
           this.isadd = true
       },
-      //详情方法
-      async handleShow(index, row) {
-        const roomId = row.roomId
-        //根据id获取内容信息
-        const res = await this.$get('/Room/GetOne', { roomId })
-        this.ruleForm = res
-        this.dialogVisible = true
+      //添加子方法
+      btnclick2(index, row) {
+        // 获取编号
+        const guestId = row.guestId
 
+        this.isadd = true
+        this.ruleForm2.guestId = guestId
+        //打开抽屉
+        this.drawer2 = true
+        //
+        this.title = "添加跟随的顾客"
+        this.label = "修改的客户"
       },
-      //图片详情方法
-      async handleShow2(index, row) {
-        const roomId = row.roomId
-        this.roomId = row.roomId
-        //打开详情
-        this.dialogVisible2 = true
-        //获取图片
-        let res = await this.$get('RoomImg/List', { roomId })
-        //上传的图片需要一定的格式,对返回的数据解析结构
-        this.ListImg = res.map(r => {
-          return { name: r.imgUrl, url: room_phont_url + r.imgUrl, roomImgId: r.roomImgId }
 
-        })
 
-      },
       //编辑方法
       async handleEdit(index, row) {
         // 获取编号
-        const roomId = row.roomId
+        const guestId = row.guestId
         //获取数据
-        const res = await this.$get('/Room/GetOne', { roomId })
+        const res = await this.$get('/GuestRecord/GetOne', { guestId })
         this.isadd = false
         this.ruleForm = res
-        //备份编号,在修改时需要用到原来编号进行修改
-        this.ruleForm.id = res.roomId
+        //给表单添加房间类型编号
+        this.ruleForm.roomTypeId = res.room.roomType.roomTypeId
+
+        //根据房间类型编号获取房间编号
+        const roomTypeId = res.room.roomType.roomTypeId
+        //判断类型是否为空
+        if (roomTypeId) {
+          //根据房间类型获取房间编号
+          let { data } = await this.$get('/Room/List', { roomTypeId })
+          //获取房间号
+          this.roomList = data
+        } else {
+          this.roomList = []
+        }
         //打开抽屉
         this.drawer = true
         //
-        this.title = "修改客户"
+        this.title = "修改的顾客"
+        this.label = "修改的客户"
+      },
+      //编辑子方法
+      async handleEdit2(index, row) {
+        // 获取编号
+        const guestSubId = row.guestSubId
+        //获取数据
+        const res = await this.$get('/GuestRecordSub/GetOne', { guestSubId })
+
+        this.isadd = false
+        this.ruleForm2 = res
+
+        //打开抽屉
+        this.drawer2 = true
+        //
+        this.title = "修改跟随的顾客"
         this.label = "修改的客户"
       },
       //删除
-      async handleDelete(roomId) {
+      async handleDelete(guestId) {
 
         //等待确认框弹出执行下一步
         await this.$c_f('确认删除吗？')
 
         //等待执行完成 获取数据后进行下一步
-        let { success, message } = await this.$post('Room/Delete', { roomId })
+        let { success, message } = await this.$post('/GuestRecord/Delete', { guestId })
+        if (success) {
+          this.$msg_s(message)
+          //刷新表格数据
+          this.getdata()
+        } else {
+          this.$msg_e(message)
+        }
+      },
+      //删除子表格
+      async handleDelete2(index, row) {
+        // 获取编号
+        const guestSubId = row.guestSubId
+        //等待确认框弹出执行下一步
+        await this.$c_f('确认删除吗？')
+
+        //等待执行完成 获取数据后进行下一步
+        let { success, message } = await this.$post('/GuestRecordSub/Delete', { guestSubId })
         if (success) {
           this.$msg_s(message)
           //刷新表格数据
@@ -421,9 +549,26 @@
           deposit: "",
           // 入住人数
           guestNum: "",
-
+        }
+        this.roomList = []
+      },
+      //重置子提交框
+      resetForm2(formName2) {
+        //重置表单
+        this.$refs[formName2].resetFields();
+        //清空数据
+        this.ruleForm2 = {
+          //顾客编号
+          guestId: "",
+          // 身份证
+          identityId: "",
+          // 姓名
+          guestName: "",
+          // 电话
+          phone: "",
 
         }
+
       },
       //关闭抽屉的方法
       handleClose(done) {
@@ -433,86 +578,63 @@
         //清空提交框
         this.resetForm('ruleForm')
       },
-      //关闭详情
-      dialogClose(done) {
+      //关闭子抽屉的方法
+      handleClose2(done) {
+        // await this.$c_f('确认关闭吗？')
+        //关闭抽屉
         done()
+        //清空提交框
+        this.resetForm2('ruleForm2')
       },
-      //关闭图片详情
-      dialogClose2(done) {
-        //清空图片
-        this.ListImg = []
 
-        setTimeout(() => {
-          done()
-        }, 200);
-      },
-      //移除图片
-      async handleRemove(file, fileList) {
 
-        let { roomImgId, name } = file
-
-        await this.$post('/RoomImg/Delete', { roomImgId, filename: name })
-
-      },
-      //预览图片
-      handlePictureCardPreview(file) {
-        this.dialogImageUrl = file.url;
-        this.dialogVisible3 = true;
-      },
-      //图片上传成功
-      async handleAvatarSuccess(res, file) {
-        let { success, filename } = res
-        if (success) {
-          let res = await this.$post('RoomImg/Add', { roomId: this.roomId, imgUrl: filename })
-
-        }
-
-      },
-      //图片上传成功之前
-      beforeAvatarUpload(file) {
-        const cKlist = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
-        // const isJPG = file.type === 'image/jpeg';
-        //检查图片格式
-        const isJPG = cKlist.includes(file.type)
-        const isLt2M = file.size / 1024 / 1024 < 2;
-
-        if (!isJPG) {
-          this.$msg_e('上传头像图片格式错误!');
-        }
-        if (!isLt2M) {
-          this.$msg_e('上传头像图片大小不能超过 2MB!');
-        }
-        return isJPG && isLt2M;
-      },
       //导出Excel表格
       exportExcel() {
         //遍历表数据
         let json = this.tableData.map(r => {
           return {
-            // roomId: r.roomId,
-            // roomTypeName: r.roomType.roomTypeName,
-            // bedNum: r.roomType.bedNum,
-            // roomTypePrice: r.roomType.roomTypePrice,
-            // roomState: r.roomType.roomState
+            guestName: r.guestName,
+            phone: r.phone,
+            identityId: r.identityId,
+            roomId: r.roomId,
+            roomTypeName: r.room.roomType.roomTypeName,
+            bedNum: r.room.roomType.bedNum,
+            price: r.room.roomType.roomTypePrice,
+            resideDate: r.resideDate,
+            leaveDate: r.leaveDate,
+            deposit: r.deposit,
+            totalMoney: r.totalMoney,
+            guestNum: r.guestNum,
+            resideStateName: r.resideState.resideStateName,
           }
         })
         //生成表头
         let fields = {
-          // roomId: "房间编号",
-          // roomTypeName: "房间类型",
-          // bedNum: "床位数",
-          // roomTypePrice: "价格",
-          // roomState: "状态"
+          guestName: "客户姓名",
+          phone: "客户电话",
+          identityId: "身份证号",
+          roomId: "入住房间",
+          roomTypeName: "房间类型",
+          bedNum: "床位数",
+          price: "房间价格",
+          resideDate: "入住日期",
+          leaveDate: "离开日志",
+          deposit: "押金",
+          totalMoney: "消费金额",
+          guestNum: "入住人数",
+          resideStateName: "结账状态",
         }
-        xlsx(json, fields, "房间信息表")
+        xlsx(json, fields, "顾客信息表")
       },
+      //房间类型下拉框更改时
       async changeRoomType(roomTypeId) {
         //清空房间号
         this.ruleForm.roomId = ""
         //判断类型是否为空
         if (roomTypeId) {
-          //获取房间类型
-          let { data } = await this.$get('/Room/List', { roomTypeId })
+          //根据房间类型获取房间编号
+          //roomStateId:1 表示获取空闲房间
+          let { data } = await this.$get('/Room/List', { roomTypeId, roomStateId: 1 })
           //获取房间号
           this.roomList = data
         } else {
@@ -560,7 +682,46 @@
           }
         });
       },
-    },
+
+      //子抽屉提交修改名称
+      submitFormChild(formName) {
+        this.$refs[formName].validate(async (valid) => {
+          if (valid) {
+
+            //弹出框切换添加或者修改
+            if (this.isadd) {
+              let { success, message } = await this.$post("/GuestRecordSub/Add", this.ruleForm2)
+              if (success) {
+                //成功通知消息
+                this.$msg_s(message)
+              } else {
+                this.$msg_w(message)
+              }
+            } else {
+              //修改角色的方法
+              let { success, message } = await this.$post("/GuestRecordSub/Update", this.ruleForm2)
+              if (success) {
+                //成功通知消息
+                this.$msg_s(message)
+                // //刷新表格数据
+                // this.getdata()
+                // //清空提交框
+                // this.resetForm("ruleForm")
+              } else {
+                this.$msg_w(message)
+              }
+            }
+            //刷新表格数据
+            this.getdata()
+            //清空提交框
+            this.resetForm2("ruleForm2")
+          } else {
+            this.$msg_e('添加错误')
+            return false
+          }
+        });
+      },
+    }
   }
 </script>
 <style scoped>

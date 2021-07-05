@@ -50,6 +50,7 @@
     display: flex;
     width: 100vw;
     height: 100vh;
+
   }
 
   .left {
@@ -68,6 +69,7 @@
     height: 60px;
     background-color: #8076a3;
 
+
   }
 
   .right .top-left {
@@ -75,7 +77,7 @@
   }
 
   .top-left {
-    width: 60px;
+    width: 50px;
     height: 60px;
     text-align: center;
     line-height: 60px;

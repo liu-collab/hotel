@@ -89,7 +89,8 @@
           //用sessionStorag.setItem来保存令牌
           sessionStorage.setItem('token', res.token)
           // 将token信息放到请求头中
-          this.$setToken();
+          // this.$setToken();
+          this.$updateToken() //更新token
           //登录成功跳转主页
           this.$router.push('/home')
           //getItem获取token

@@ -9,6 +9,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "echarts": "^5.1.2",
     "element-ui": "^2.15.2",
     "file-saver": "^2.0.5",
     "js-md5": "^0.7.3",

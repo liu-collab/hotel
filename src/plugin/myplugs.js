@@ -1,4 +1,4 @@
-import { get, post, setToken } from "../utils/request";
+import { get, post, setToken, updateToken } from "../utils/request";
 
 //定义一个插件
 export default {
@@ -17,6 +17,10 @@ export default {
         $setToken() {
           // 执行该方法，就会将浏览器缓存里面的token信息保存到ajax的请求头中
           setToken();
+        },
+        //更新token
+        $updateToken() {
+          updateToken()
         },
         //混入成功消息提示
         $msg_s(message = "操作成功", duration = 3000) {

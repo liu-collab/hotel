@@ -9,9 +9,19 @@ import "nprogress/nprogress.css";
 
 //创建axios实例
 const instance = axios.create({
+  //请求根路劲
   baseURL: base_url,
+  //超时时间
   timeout: 5000,
+  // //请求头信息
+  // headers: { 'token': sessionStorage.getItem('token') }
 })
+//设置更新请求头的方法
+instance.defaults.headers.common['token'] = sessionStorage.getItem('token')
+export let updateToken = () => {
+  instance.defaults.headers.common['token'] = sessionStorage.getItem('token')
+
+}
 //请求拦截
 instance.interceptors.request.use(config => {
   //请求前开启进度条

@@ -34,8 +34,9 @@
         if (success) {
           // 保存token
           sessionStorage.setItem("token", token);
-          // 将token信息放到请求头中
-          this.$setToken();
+          // // 将token信息放到请求头中
+          // this.$setToken();
+          this.$updateToken() //更新token
           //保存登录信息
           sessionStorage.setItem('loginId', this.loginId)
 

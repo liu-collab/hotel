@@ -1,11 +1,21 @@
 <template>
   <div>
     <!-- 添加 -->
-    <div class="add">
-      <el-button type="primary" @click="btnclick">添加账户</el-button>
+    <div class="searcher">
+
+      <el-select v-model="roleId" placeholder="请选择角色">
+        <el-option v-for="item in roleList" :key="item.roleId" :label="item.roleName" :value="item.roleId">
+        </el-option>
+      </el-select>
+
+      <div class="add">
+        <el-button type="primary" size="mini" @click="btnsearch">搜索</el-button>
+        <el-button type="primary" size="mini" @click="btnclick">添加</el-button>
+        <el-button type="primary" size="mini" @click="exportExcel">导出Excel</el-button>
+      </div>
     </div>
     <!-- 表格 -->
-    <el-table size="mini" :data="tableData" style="width: 99%">
+    <el-table size="small" :data="tableData" style="width: 99%" height="520">
       <el-table-column prop="id" label="编号" width="180">
       </el-table-column>
       <el-table-column prop="loginId" label="帐号" width="180">
@@ -57,7 +67,7 @@
         </el-form-item>
 
         <el-form-item label="角色" prop="roleId">
-          <el-select v-model="ruleForm.roleId" placeholder="请选择">
+          <el-select v-model="ruleForm.roleId" placeholder="请选择角色">
             <el-option v-for="item in roleList" :key="item.roleId" :label="item.roleName" :value="item.roleId">
             </el-option>
           </el-select>
@@ -68,6 +78,9 @@
         </el-form-item>
       </el-form>
     </el-drawer>
+    <!-- 分页 -->
+    <el-pagination background layout="prev, pager, next" @current-change="change" class="page" :total="count">
+    </el-pagination>
   </div>
 </template>
 <script>
@@ -124,6 +137,12 @@
       };
 
       return {
+        //总数量
+        count: 1,
+        //页码
+        pageIndex: 1,
+        //角色id
+        roleId: "",
         //表格数据
         tableData: [],
         //角色名
@@ -164,9 +183,48 @@
     created() {
       //获取表格数据
       this.getdata()
+      //获取角色列表
       this.getroleList()
     },
     methods: {
+      //分页功能
+      change(pageIndex) {
+        this.pageIndex = pageIndex
+        this.getdata()
+      },
+      //搜索按钮
+      btnsearch() {
+        this.getdata()
+      },
+      //添加方法
+      btnclick() {
+        this.drawer = true
+        this.title = "添加客户"
+        this.label = "添加账号",
+          this.isadd = true
+      },
+      //导出Excel表格
+      exportExcel() {
+        //遍历表数据
+        let json = this.tableData.map(r => {
+          return {
+            // roomId: r.roomId,
+            // roomTypeName: r.roomType.roomTypeName,
+            // bedNum: r.roomType.bedNum,
+            // roomTypePrice: r.roomType.roomTypePrice,
+            // roomState: r.roomType.roomState
+          }
+        })
+        //生成表头
+        let fields = {
+          // roomId: "房间编号",
+          // roomTypeName: "房间类型",
+          // bedNum: "床位数",
+          // roomTypePrice: "价格",
+          // roomState: "状态"
+        }
+        xlsx(json, fields, "房间信息表")
+      },
       //图片上传成功
       handleAvatarSuccess(res, file) {
         console.log(res)
@@ -201,17 +259,16 @@
         // const res = await this.$get('/Admin/List')
         // console.log(res)
         // this.tableData = res
-        const { data } = await this.$get('/Admin/List')
-
+        const { data, count } = await this.$get('/Admin/List', {
+          roleId: this.roleId === "" ? 0 : this.roleId,
+          //页码
+          pageIndex: this.pageIndex,
+        })
+        //获取页码
+        this.count = count
         this.tableData = data
       },
-      //添加方法
-      btnclick() {
-        this.drawer = true
-        this.title = "添加账户"
-        this.label = "添加账号",
-          this.isadd = true
-      },
+
       //编辑方法
       async handleEdit(loginId) {
         //获取数据
@@ -310,8 +367,26 @@
   }
 </script>
 <style scoped>
+  .searcher {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    align-content: center;
+
+  }
+
   .add {
-    margin: 20px;
+
+    margin-left: 10px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+  }
+
+  .page {
+    display: flex;
+    align-content: center;
+    justify-content: center;
   }
 
   .avatar-uploader {

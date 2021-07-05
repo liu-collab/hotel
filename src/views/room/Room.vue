@@ -36,6 +36,13 @@
       <el-table-column prop="roomType.roomTypePrice" label="价格" width="180">
       </el-table-column>
       <el-table-column prop="roomState.roomStateName" label="房间状态" width="180">
+        <template slot-scope="scope">
+          <el-tag size="mini"
+            :type="scope.row.roomStateId === 1 ? 'danger' : (scope.row.roomStateId === 2?'success':'warning')"
+            disable-transitions>
+            {{ scope.row.roomState.roomStateName }}
+          </el-tag>
+        </template>
       </el-table-column>
 
       <el-table-column label="操作">
