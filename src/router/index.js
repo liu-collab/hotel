@@ -7,6 +7,7 @@ import "nprogress/nprogress.css";
 Vue.use(VueRouter)
 const index = () => import('../views/index.vue')
 const Login = () => import('../views/Login.vue')
+const Register = () => import('../views/register.vue')
 const Home = () => import('../views/home/home.vue')
 const HomePage = () => import('../views/homepage/HomePage.vue')
 const Message = () => import('../views/message/Message.vue')
@@ -28,6 +29,10 @@ const routes = [
   {//登录页
     path: '/login',
     component: Login
+  },
+  {//登录页
+    path: '/register',
+    component: Register
   },
   {
     //首页

@@ -1,27 +1,35 @@
 <template>
-  <div class="login">
-    <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px">
-      <el-form-item label="用户名" prop="loginId">
-        <el-input type="string" v-model="ruleForm.loginId"></el-input>
-      </el-form-item>
-      <el-form-item label="密码" prop="loginPwd">
-        <el-input type="password" v-model="ruleForm.loginPwd"></el-input>
-      </el-form-item>
-      <el-form-item label="" prop="checkme">
-        <el-checkbox v-model="ruleForm.checkme">记住我</el-checkbox>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
-        <el-button @click="resetForm('ruleForm')">重置</el-button>
-      </el-form-item>
-    </el-form>
+  <div>
+    <div class="login">
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" router>
+        <el-form-item label="用户名" prop="loginId">
+          <el-input type="string" v-model="ruleForm.loginId"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="loginPwd">
+          <el-input type="password" v-model="ruleForm.loginPwd"></el-input>
+        </el-form-item>
+        <el-form-item label="" prop="checkme">
+          <el-checkbox v-model="ruleForm.checkme">记住我</el-checkbox>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+          <el-button type="primary" @click="resgister">注册</el-button>
+          <el-button @click="resetForm('ruleForm')">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <landscape></landscape>
   </div>
 </template>
 <script>
   import { str2md2 } from '../utils/utils'
+  import landscape from '../components/Landscape'
   export default {
     name: '',
     props: {},
+    components: {
+      landscape
+    },
     data() {
       var validatePass = (rule, value, callback) => {
         if (value === '') {
@@ -43,6 +51,7 @@
           loginPwd: '',
           checkme: false
         },
+        path: '/register',
         rules: {
           //光标离开时调用的方法
           loginId: [
@@ -56,7 +65,10 @@
     },
 
     methods: {
-
+      //登陆跳转
+      resgister() {
+        this.$router.replace(this.path)
+      },
       //登录
       submitForm(formName) {
         this.$refs[formName].validate(async (valid) => {
@@ -146,7 +158,8 @@
     top: 50%;
     left: 50%;
     padding: 40px 40px 70px 10px;
-    border: 1px solid #eee;
+
     transform: translate(-60%, -50%);
+    z-index: 99999;
   }
 </style>

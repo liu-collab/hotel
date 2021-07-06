@@ -332,7 +332,7 @@
               //对密码进行加密
               this.ruleForm.loginPwd = str2md2(this.ruleForm.loginPwd);
               let { success, message } = await this.$post("/Admin/Add", this.ruleForm)
-
+              console.log(this.ruleForm)
               if (success) {
                 //成功通知消息
                 this.$msg_s(message)
