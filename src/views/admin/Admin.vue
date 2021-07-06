@@ -331,6 +331,7 @@
             if (this.isadd) {
               //对密码进行加密
               this.ruleForm.loginPwd = str2md2(this.ruleForm.loginPwd);
+              this.ruleForm.loginPwd2 = str2md2(this.ruleForm.loginPwd2);
               let { success, message } = await this.$post("/Admin/Add", this.ruleForm)
               console.log(this.ruleForm)
               if (success) {

@@ -32,6 +32,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleForm')">提交注册</el-button>
+          <el-button type="primary" @click="loginbtn">返回登录</el-button>
           <el-button @click="resetForm('ruleForm')">重置</el-button>
         </el-form-item>
       </el-form>
@@ -115,6 +116,9 @@
     created() {
     },
     methods: {
+      loginbtn() {
+        this.$router.replace('/Login')
+      },
       //重置提交框
       resetForm(formName) {
         //重置表单
