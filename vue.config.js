@@ -8,6 +8,8 @@ module.exports = {
     port: 8000,
     //开放静态资源
     contentBase: path.join(__dirname, 'public'),
+    //内网穿透
+    disableHostCheck: true
   },
   //配置webpack相关信息
   configureWebpack: {
@@ -21,6 +23,7 @@ module.exports = {
         '@g': path.resolve(__dirname, 'src/config'),
       }
     }
-  }
+  },
+
 
 }
